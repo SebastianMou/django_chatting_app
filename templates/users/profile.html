@@ -1,0 +1,9 @@
+{% extends '../base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <img src="{{ user.profile.profile_image.url }}" alt="" srcset="">
+    <h1>{{ user.username }}</h1>
+</div>
+{% endblock %}

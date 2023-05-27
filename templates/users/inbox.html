@@ -1,0 +1,314 @@
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KyZXEAg3QhqLMpG8r+Knujsl5/6en6XCp+HHAAK5GSLf2xlYtvJ8U2Q4U+9cuEnJoa3" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+    <!-- Other head content -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!--linkss-->
+    <link rel="stylesheet" href="{% static 'css/inbox.css' %}">
+</head>
+<body>
+    <br>
+    <div class="container" data-aos="fade-up">
+        <div class="row">
+            <div class="col-md-4">
+                <div id="all_chats" class="card overflow-auto">
+                    <div class="card-body">
+                        <input class="form-control" type="text" id="searchBar" placeholder="Buscar usuarios...">
+                        <hr>
+                        <div id="userList">
+                            {% for message in messages %}
+                                <div class="chat-list" data-username="{{ message.user.username }}" data-firstname="{{ message.user.first_name }}">
+                                    <a href="{% url 'directs' message.user.username %}" class="d-flex align-items-center">
+                                        <div class="d-flex align-items-center flex-grow-1">
+                                            <div class="flex-shrink-0">
+                                                <img style="width: 40px; height: 40px;"
+                                                    class="img-fluid rounded-circle shadow-4-strong"
+                                                    src="{{ message.user.profile.profile_image.url }}" alt="user img">
+                                                {% if is_active %}
+                                                    <span class=""></span>
+                                                {% else %}
+                                                    <span class="active"></span>
+                                                {% endif %}
+                                            </div>
+                                        
+                                            <div class="ms-3">
+                                                <h3>{{ message.user.first_name }} {{ message.user.last_name }}</h3>
+                                                <p>@{{ message.user }}</p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            {% empty %}
+                                <center>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" fill="currentColor" class="bi bi-chat-square-text" viewBox="0 0 16 16">
+                                        <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-2.5a2 2 0 0 0-1.6.8L8 14.333 6.1 11.8a2 2 0 0 0-1.6-.8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2.5a1 1 0 0 1 .8.4l1.9 2.533a1 1 0 0 0 1.6 0l1.9-2.533a1 1 0 0 1 .8-.4H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                                        <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6zm0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
+                                    </svg>
+                                    <h5>Por el momento no hay nada que mostrar</h5>
+                                </center>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div style="padding-right: 5px;" class="flex-shrink-0 mr-3">
+                                <h3>Inbox</h3>
+                            </div>
+                        </div>
+                        <hr>
+                    </div>
+                    <div style="height: 41rem;" class="modal-body overflow-auto">
+                        <div class="msg-body">
+                            <ul>
+                                {% for direct in directs %}
+                                {% if direct.sender == request.user %}
+                                <li class="repaly">
+                                    <p> {{ direct.body }}</p>
+                                    <span class="time">{{ direct.date }}</span>
+                                    {% if direct.file %}
+                                    <p>
+                                        <a href="{{ direct.file.url }}" target="_blank">Descargar Archivo</a>
+                                    </p>
+                                    {% endif %}
+
+                                </li>
+                                {% else%}
+                                <li class="sender">
+                                    <p>{{ direct.body }}</p>
+                                    <span class="time">{{ direct.date }}</span>
+                                    {% if direct.file %}
+                                    <p>
+                                        <a href="{{ direct.file.url }}" target="_blank">Descargar Archivo</a>
+                                    </p>
+                                    {% endif %}
+                                </li>
+                                {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="send-box">
+                        <form role="form" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type="hidden" name="to_user" id="" value="{{ active_direct }}">
+                            <input name="body" type="text" id="" value="" class="form-control"
+                                placeholder="typ message">
+
+                            <input type="file" name="file" id="file" style="display:none;" />
+                            <label class="btn btn-warning btn-sm" for="file" class="file-label">
+                                <i class="fa fa-paperclip" aria-hidden="true"></i>
+                            </label>
+
+                            <button type="submit"><i class="fa fa-paper-plane" aria-hidden="true"></i>Send</button>
+                        </form>
+                        <div class="d-flex">
+                            <i id="file-icon" class="bi bi-file-earmark-arrow-down" style="display: none;"></i>
+                            <span id="file-name" class="ms-2"></span>
+                            <button id="unselect-file" type="button" class="btn btn-danger btn-sm ms-2"
+                                style="display: none;"><i class="bi bi-x-circle"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const currentUser = "{{ request.user.username }}";
+        const activeDirect = "{{ active_direct }}";
+
+        function sendMessage() {
+            const toUser = document.querySelector('input[name="to_user"]').value;
+            const body = document.querySelector('input[name="body"]').value;
+            const fileInput = document.querySelector('input[type="file"]');
+            const formData = new FormData();
+
+            formData.append('to_user', toUser);
+            formData.append('body', body);
+
+            if (fileInput.files.length > 0) {
+                formData.append('file', fileInput.files[0]);
+            }
+
+            fetch('/send_message_ajax/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: formData,
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        document.querySelector('input[name="body"]').value = '';
+                        fileInput.value = ''; // Add this line to clear the file input
+
+                        // Clear the file name, hide the file icon, and hide the "Unselect" button
+                        const fileNameElement = document.getElementById('file-name');
+                        const fileIconElement = document.getElementById('file-icon');
+                        const unselectFileButton = document.getElementById('unselect-file');
+                        fileNameElement.textContent = '';
+                        fileIconElement.style.display = 'none';
+                        unselectFileButton.style.display = 'none';
+
+                        getMessages(toUser).then(() => {
+                            scrollToBottom();
+                        });
+                    } else {
+                        console.error('Failed to send message');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+        function getMessages(username) {
+            return fetch(`/get_messages_ajax/${username}/`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    const messageList = document.querySelector('.msg-body ul');
+                    const oldMessageCount = messageList.children.length;
+
+                    messageList.innerHTML = '';
+
+                    data.messages.forEach((message, index) => {
+
+                        const listItem = document.createElement('li');
+                        listItem.className = message.sender === currentUser ? 'repaly' : 'sender';
+
+                        const messageText = document.createElement('p');
+                        messageText.textContent = message.body;
+                        listItem.appendChild(messageText);
+
+                        const messageTime = document.createElement('span');
+                        messageTime.className = 'time';
+                        messageTime.textContent = message.date;
+                        listItem.appendChild(messageTime);
+
+                        if (message.file_url) {
+                            const card = document.createElement('div');
+                            card.className = 'card mt-2';
+
+                            const cardBody = document.createElement('div');
+                            cardBody.className = '';
+
+                            const fileLink = document.createElement('a');
+                            fileLink.href = message.file_url;
+                            fileLink.target = '_blank';
+                            fileLink.className = 'btn btn-warning';
+
+                            const fileIcon = document.createElement('i');
+                            fileIcon.className = 'bi bi-file-earmark-arrow-down'; // Add Bootstrap icon class
+                            fileLink.appendChild(fileIcon); // Add the fileIcon to the fileLink
+
+                            const viewFileText = document.createTextNode(' Descargar Archivo');
+                            fileLink.appendChild(viewFileText); // Add the 'View File' text after the icon
+
+                            cardBody.appendChild(fileLink);
+                            card.appendChild(cardBody);
+                            listItem.appendChild(card);
+                        }
+
+
+                        messageList.appendChild(listItem);
+                    });
+
+
+                    const newMessageCount = messageList.children.length;
+                    return oldMessageCount !== newMessageCount;
+                });
+        }
+
+        function scrollToBottom() {
+            const messageContainer = document.querySelector('.modal-body.overflow-auto');
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+        }
+
+        function pollNewMessages() {
+            setInterval(() => {
+                getMessages(activeDirect).then(newMessageAdded => {
+                    if (newMessageAdded) {
+                        scrollToBottom();
+                    }
+                });
+            }, 3000);
+        }
+
+        document.querySelector('input[type="file"]').addEventListener('change', function () {
+            const fileNameElement = document.getElementById('file-name');
+            const fileIconElement = document.getElementById('file-icon');
+            const unselectFileButton = document.getElementById('unselect-file');
+
+            if (this.files.length > 0) {
+                fileNameElement.textContent = this.files[0].name;
+                fileIconElement.style.display = 'inline-block'; // Show the file icon
+                unselectFileButton.style.display = 'inline-block'; // Show the "Unselect" button
+            } else {
+                fileNameElement.textContent = '';
+                fileIconElement.style.display = 'none'; // Hide the file icon
+                unselectFileButton.style.display = 'none'; // Hide the "Unselect" button
+            }
+        });
+
+        document.getElementById('unselect-file').addEventListener('click', function () {
+            const fileInput = document.querySelector('input[type="file"]');
+            const fileNameElement = document.getElementById('file-name');
+            const fileIconElement = document.getElementById('file-icon');
+            const unselectFileButton = document.getElementById('unselect-file');
+
+            fileInput.value = '';
+            fileNameElement.textContent = '';
+            fileIconElement.style.display = 'none'; // Hide the file icon
+            unselectFileButton.style.display = 'none'; // Hide the "Unselect" button
+        });
+
+        document.querySelector('form').addEventListener('submit', event => {
+            event.preventDefault();
+            sendMessage();
+        });
+
+        getMessages(activeDirect).then(() => {
+            scrollToBottom();
+        });
+        pollNewMessages();
+
+        document.getElementById("searchBar").addEventListener("input", function() {
+            filterUserList(this.value);
+        });
+
+        function filterUserList(searchText) {
+            const chatListItems = document.querySelectorAll(".chat-list");
+            chatListItems.forEach(item => {
+                const username = item.getAttribute("data-username");
+                const firstName = item.getAttribute("data-firstname");
+                if (username.toLowerCase().includes(searchText.toLowerCase()) || firstName.toLowerCase().includes(searchText.toLowerCase())) {
+                    item.style.display = "block";
+                } else {
+                    item.style.display = "none";
+                }
+            });
+        }
+    </script>
