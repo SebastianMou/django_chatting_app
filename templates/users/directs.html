@@ -26,16 +26,66 @@
     <link rel="stylesheet" href="{% static 'css/directs.css' %}">
 </head>
 <body>
-    <a href="/">
-        <h5>home</h5>
-    </a>
+    <style>
+        body {
+            background-color: #020211;
+            color: #ffffff;
+        }
+        .navbar {
+            background-color: #000006 !important;
+            height: 60px;
+            border-bottom: 2px solid blue;
+            box-shadow: 0 8px 10px -5px blue;
+        }
+        .glow {
+            color: #00f;
+            text-shadow: 0 0 5px #00f, 0 0 9px #00f, 0 0 14px #00f, 0 0 19px #00f;
+        }
+        .navbar-brand.big-text {
+            font-size: 24px !important;
+        }
+    </style>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+                <a style="color: rgba(8, 161, 232, 0.784);" class="navbar-brand big-text glow" href="/">HiddenDialogs</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a style="color: #00f;" class="nav-link active" aria-current="page" href="{% url 'user_logout' %}">logout</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a style="color: #00f;" class="nav-link active" aria-current="page" href="{% url 'user_login' %}">login</a>
+                    </li>
+                {% endif %}
+
+                {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a style="color: #00f;" class="nav-link" href="{% url 'dashboard' %}" tabindex="-1" aria-disabled="true">{{ request.user }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a style="color: #00f;" class="nav-link" href="{% url 'inbox' %}" tabindex="-1" aria-disabled="true">Inbox</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">--</a>
+                    </li>
+                {% endif %}
+            </ul>
+          </div>
+        </div>
+      </nav>
     <br>
     <div class="container" data-aos="fade-up">
         <div class="row">
             <div class="col-md-4">
-                <div id="all_chats" class="card overflow-auto">
-                    <div class="card-body">
-                        <input class="form-control" type="text" id="searchBar" placeholder="Buscar usuarios...">
+                <div style="border-color: #00f;" id="all_chats" class="card overflow-auto">
+                    <div style="background-color: black;" class="card-body">
+                        <input style="background-color: #000006; color: white;" class="form-control" type="text" id="searchBar" placeholder="Buscar usuarios...">
                         <hr>
                         <div id="userList">
                             {% for message in messages %}
@@ -52,10 +102,9 @@
                                                     <span class="active"></span>
                                                 {% endif %}
                                             </div>
-                                        
                                             <div class="ms-3">
-                                                <h3>{{ message.user.first_name }} {{ message.user.last_name }}</h3>
-                                                <p>@{{ message.user }}</p>
+                                                <h3 style="color: white;">{{ message.user.first_name }} {{ message.user.last_name }}</h3>
+                                                <p style="color: white;">@{{ message.user }}</p>
                                             </div>
                                             
                                         </div>
@@ -75,8 +124,8 @@
                 </div>
             </div>
             <div class="col-md-8">
-                <div class="card">
-                    <div class="card-body">
+                <div class="card" style="border-color: #00f;">
+                    <div style="background-color: black;" class="card-body">
                         <div class="d-flex align-items-center">
                             <div style="padding-right: 5px;" class="flex-shrink-0 mr-3">
                                 <img style="width: 45px; height: 45px;" class="img-fluid rounded-circle shadow-4-strong"
@@ -85,52 +134,52 @@
                             <div class="d-flex flex-column flex-grow-1">
                                 <div class="d-flex align-items-center">
                                     <a style="text-decoration: none; color: #343434;"
-                                    href="{% url 'profile' sending_message_to.username %}">
-                                    <h3 style="font-size: 18px; margin: 0;">{{ sending_message_to.first_name }} {{ sending_message_to.last_name }}</h3>
-                                    <p style="font-size: 16px; margin: 0;">{{ sending_message_to }}</p>
+                                    href="{% url 'directs' sending_message_to.username %}">
+                                    <h3 style="font-size: 18px; margin: 0; color: white;">{{ sending_message_to.first_name }} {{ sending_message_to.last_name }}</h3>
+                                    <p style="font-size: 16px; margin: 0; color: white;">{{ sending_message_to }}</p>
                                     </a>
                                 </div>
                             </div>
-                            <a href="" class="d-flex align-items-center ms-auto" id="delete-conversation" style="margin-left: auto;">
+                            <!-- <a href="" class="d-flex align-items-center ms-auto" id="delete-conversation" style="margin-left: auto;">
                                 <i class="bi bi-trash3"></i>
-                            </a>
+                            </a> -->
                         </div>
+                        <hr>
                     </div>
-                    <hr>
-                    <div style="height: 41rem;" class="modal-body overflow-auto">
-                        <div class="msg-body">
+                    <div style="height: 41rem; background-color: black;" class="modal-body overflow-auto">
+                        <div style="background-color: black;" class="msg-body">
                             <ul>
                                 {% for direct in directs %}
                                     {% if direct.sender == request.user %}
-                                    <li class="repaly">
-                                        <p> {{ direct.body }}</p>
-                                        <span class="time">{{ direct.date }}</span>
-                                        {% if direct.file %}
-                                            <p>
-                                                <a href="{{ direct.file.url }}" target="_blank">Descargar Archivo</a>
-                                            </p>
-                                        {% endif %}
-                                    </li>
+                                        <li class="repaly">
+                                            <p> {{ direct.body }}</p>
+                                            <span class="time">{{ direct.date }}</span>
+                                            {% if direct.file %}
+                                                <p>
+                                                    <a href="{{ direct.file.url }}" target="_blank">Descargar Archivo</a>
+                                                </p>
+                                            {% endif %}
+                                        </li>
                                     {% else%}
-                                    <li class="sender">
-                                        <p>{{ direct.body }}</p>
-                                        <span class="time">{{ direct.date }}</span>
-                                        {% if direct.file %}
-                                            <p>
-                                                <a href="{{ direct.file.url }}" target="_blank">Descargar Archivo</a>
-                                            </p>
-                                        {% endif %}
-                                    </li>
+                                        <li class="sender">
+                                            <p>{{ direct.body }}</p>
+                                            <span class="time">{{ direct.date }}</span>
+                                            {% if direct.file %}
+                                                <p>
+                                                    <a href="{{ direct.file.url }}" target="_blank">Descargar Archivo</a>
+                                                </p>
+                                            {% endif %}
+                                        </li>
                                     {% endif %}
                                 {% endfor %}
                             </ul>
                         </div>
                     </div>
-                    <div class="send-box">
+                    <div style="background-color: black; border-color: #00f;" class="send-box">
                         <form role="form" method="POST" enctype="multipart/form-data">
                             {% csrf_token %}
                             <input type="hidden" name="to_user" id="" value="{{ active_direct }}">
-                            <input name="body" type="text" id="" value="" class="form-control"
+                            <input name="body" type="text" id="" value="" class="form-control bg-dark text-white"
                                 placeholder="typ message">
 
                             <input type="file" name="file" id="file" style="display:none;" />
@@ -223,6 +272,7 @@
 
                         const messageTime = document.createElement('span');
                         messageTime.className = 'time';
+                        messageTime.style.color = 'gray';
                         messageTime.textContent = message.date;
                         listItem.appendChild(messageTime);
 
@@ -329,3 +379,5 @@
             });
         }
     </script>
+</body>
+</html>

@@ -5,12 +5,14 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.contrib.auth import get_user_model
 
 from .forms import NewUserForm
 from .models import Message, Profile
 # Create your views here.
 def home(request):
-    users = User.objects.order_by('?')[:10]
+    current_user = request.user
+    users = User.objects.order_by('?').exclude(id=current_user.id)[:10]
     context = {
         'users': users,
     }
@@ -28,6 +30,25 @@ def user_login(request):
             messages.warning(request, "error while login in.")
 
     return render(request, 'autho/user_login.html')
+
+def email_login(request):
+    if request.method == 'POST':
+        email = request.POST["email"]
+        password = request.POST["password"]
+        User = get_user_model()
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            user = None
+
+        if user is not None:
+            user = authenticate(request, username=user.username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('/')
+        messages.warning(request, "error while login in.")
+
+    return render(request, 'autho/email_login.html')
 
 def user_logout(request):
     logout(request)
@@ -110,10 +131,13 @@ def directs(request, username):
         is_active = True
     else:
         is_active = False
-    
+
     for message in messages:
         if message['user'].username == username:
             message['unread'] = 0
+
+    if request.user.username == username:
+        return redirect('/')
 
     context = {
         'sending_message_to': sending_message_to,

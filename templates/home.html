@@ -2,22 +2,22 @@
 {% load static %}
 
 {% block content %}
-<h1>home page</h1>
-
+<br>
 <div class="row">
     {% for x in users %}
         <div class="col-md-4 mb-4">
-            <div class="card">
+            <div style="background-color: black; border-color: rgba(8, 161, 232, 0.784);" class="card">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="d-flex align-items-center">
                             <img style="width: 60px; height: auto;" class="img-thumbnail" src="{{ x.profile.profile_image.url }}" alt="" srcset="">
                             <a href="{% url 'profile' x.username %}">
-                                <p style="margin-left: 12px;">{{ x.username }}</p>
+                                <p style="margin-left: 12px; margin-bottom: 0"><b>{{ x.first_name }} {{ x.last_name }}</b></p>
+                                <p style="margin-left: 12px; margin-bottom: 0;">{{ x.username }}</p>
                             </a>
                         </div>
                         <div>
-                            <a class="btn btn-outline-danger" href="{% url 'inbox' %}">chat</a>
+                            <a class="btn btn-outline-danger" href="{% url 'directs' x.username %}">chat</a>
                         </div>
                     </div>
                 </div>

@@ -17,10 +17,11 @@ class Message(models.Model):
     reciepient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='to_user')
     body = models.TextField()
     file = models.FileField(upload_to='uploads/', null=True, blank=True)
+    message_image = models.ImageField(upload_to='image_sent/', null=True, blank=True)
     date = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
 
-    def send_message(from_user, to_user, body, file=None):
+    def send_message(from_user, to_user, body, file=None, message_image=None):
         sender_message = Message(
             user=from_user,
             sender=from_user,
