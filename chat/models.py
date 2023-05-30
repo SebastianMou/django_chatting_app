@@ -33,6 +33,9 @@ class Message(models.Model):
         if file:
             sender_message.file = file
 
+        if message_image:
+            sender_message.message_image = message_image
+
         sender_message.save()
 
         recipient_message = Message(
@@ -45,6 +48,9 @@ class Message(models.Model):
 
         if file:
             recipient_message.file = sender_message.file  # Use the file saved in the sender_message
+
+        if message_image:
+            recipient_message.message_image = message_image
 
         recipient_message.save()
         return sender_message

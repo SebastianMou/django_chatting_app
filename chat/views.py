@@ -154,9 +154,10 @@ def send_message_ajax(request):
         to_user_username = request.POST.get('to_user')
         body = request.POST.get('body')
         file = request.FILES.get('file')
+        message_image = request.FILES.get('message_image')  
 
         to_user = User.objects.get(username=to_user_username)
-        Message.send_message(from_user, to_user, body, file)
+        Message.send_message(from_user, to_user, body, file, message_image)
 
         return JsonResponse({'status': 'success'})
     else:
@@ -177,9 +178,10 @@ def get_messages_ajax(request, username):
         }
         if direct.file:
             message_data['file_url'] = direct.file.url
+        if direct.message_image:  # Check if the message_image attribute exists
+            message_data['message_image_url'] = direct.message_image.url  # Add the image's URL to the message_data
         messages.append(message_data)
 
     # print(messages)  # Add this line to print messages data
     return JsonResponse({'messages': messages})
-
 
