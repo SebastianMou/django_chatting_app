@@ -133,31 +133,40 @@
                         <hr>
                     </div>
                     <div style="height: 41rem; background-color: black;" class="modal-body overflow-auto">
-                        <div class="msg-body">
+                        <div style="background-color: black;" class="msg-body">
                             <ul>
                                 {% for direct in directs %}
-                                {% if direct.sender == request.user %}
-                                <li class="repaly">
-                                    <p> {{ direct.body }}</p>
-                                    <span class="time">{{ direct.date }}</span>
-                                    {% if direct.file %}
-                                    <p>
-                                        <a href="{{ direct.file.url }}" target="_blank">Descargar Archivo</a>
-                                    </p>
+                                    {% if direct.sender == request.user %}
+                                        <li class="repaly">
+                                            <p> {{ direct.body }}</p>
+                                            <span class="time">{{ direct.date }}</span>
+                                            {% if direct.file %}
+                                                <p>
+                                                    <a href="{{ direct.file.url }}" target="_blank">Download File</a>
+                                                </p>
+                                            {% endif %}
+                                            {% if direct.message_image %}
+                                                <p>
+                                                    <img src="{{ direct.message_image.url }}" alt="Message Image" />
+                                                </p>
+                                            {% endif %}
+                                        </li>
+                                    {% else %}
+                                        <li class="sender">
+                                            <p>{{ direct.body }}</p>
+                                            <span class="time">{{ direct.date }}</span>
+                                            {% if direct.file %}
+                                                <p>
+                                                    <a href="{{ direct.file.url }}" target="_blank">Download File</a>
+                                                </p>
+                                            {% endif %}
+                                            {% if direct.message_image %}
+                                                <p>
+                                                    <img src="{{ direct.message_image.url }}" data-bs-toggle="modal" data-bs-target="#exampleModal" alt="Message Image" />
+                                                </p>
+                                            {% endif %}
+                                        </li>
                                     {% endif %}
-
-                                </li>
-                                {% else%}
-                                <li class="sender">
-                                    <p>{{ direct.body }}</p>
-                                    <span class="time">{{ direct.date }}</span>
-                                    {% if direct.file %}
-                                    <p>
-                                        <a href="{{ direct.file.url }}" target="_blank">Descargar Archivo</a>
-                                    </p>
-                                    {% endif %}
-                                </li>
-                                {% endif %}
                                 {% endfor %}
                             </ul>
                         </div>
@@ -166,7 +175,7 @@
                         <form role="form" method="POST" enctype="multipart/form-data">
                             {% csrf_token %}
                             <input type="hidden" name="to_user" id="" value="{{ active_direct }}">
-                            <input name="body" type="text" id="" value="" class="form-control"
+                            <input name="body" type="text" id="" value="" class="form-control bg-dark text-white"
                                 placeholder="typ message">
 
                             <input type="file" name="file" id="file" style="display:none;" />
@@ -174,19 +183,47 @@
                                 <i class="fa fa-paperclip" aria-hidden="true"></i>
                             </label>
 
+                            <input type="file" name="message_image" id="image" style="display:none;" />
+                            <label class="btn btn-warning btn-sm" for="image">
+                                <i class="bi bi-card-image" aria-hidden="true"></i>
+                            </label>
+
                             <button type="submit"><i class="fa fa-paper-plane" aria-hidden="true"></i>Send</button>
                         </form>
                         <div class="d-flex">
                             <i id="file-icon" class="bi bi-file-earmark-arrow-down" style="display: none;"></i>
                             <span id="file-name" class="ms-2"></span>
-                            <button id="unselect-file" type="button" class="btn btn-danger btn-sm ms-2"
-                                style="display: none;"><i class="bi bi-x-circle"></i></button>
+                            <button id="unselect-file" type="button" class="btn btn-danger btn-sm ms-2" style="display: none;">
+                                <i class="bi bi-x-circle"></i>
+                            </button>
+                        </div>
+                        <div class="d-flex">
+                            <i id="image-icon" class="bi bi-file-image" style="display: none;"></i>
+                            <span id="image-name" class="ms-2"></span>
+                            <button id="unselect-image" type="button" class="btn btn-danger btn-sm ms-2" style="display: none;">
+                                <i class="bi bi-x-circle"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div style="background-color: black;" class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Image</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: red;"></button> <!-- Change red to the color you want -->
+                </div>
+                <div class="modal-body" id="modal-body"> <!-- Add id="modal-body" here -->
+                <!-- The image will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+  
     <script>
         const currentUser = "{{ request.user.username }}";
         const activeDirect = "{{ active_direct }}";
@@ -195,6 +232,7 @@
             const toUser = document.querySelector('input[name="to_user"]').value;
             const body = document.querySelector('input[name="body"]').value;
             const fileInput = document.querySelector('input[type="file"]');
+            const imageInput = document.querySelector('input[id="image"]');
             const formData = new FormData();
 
             formData.append('to_user', toUser);
@@ -202,6 +240,10 @@
 
             if (fileInput.files.length > 0) {
                 formData.append('file', fileInput.files[0]);
+            }
+
+            if (imageInput.files.length > 0) {
+                formData.append('message_image', imageInput.files[0]);
             }
 
             fetch('/send_message_ajax/', {
@@ -216,14 +258,23 @@
                     if (data.status === 'success') {
                         document.querySelector('input[name="body"]').value = '';
                         fileInput.value = ''; // Add this line to clear the file input
+                        imageInput.value = ''; 
 
-                        // Clear the file name, hide the file icon, and hide the "Unselect" button
+                        // Clear the file name, hide the file icon, and hide the "Unselect" button when sent
                         const fileNameElement = document.getElementById('file-name');
                         const fileIconElement = document.getElementById('file-icon');
                         const unselectFileButton = document.getElementById('unselect-file');
                         fileNameElement.textContent = '';
                         fileIconElement.style.display = 'none';
                         unselectFileButton.style.display = 'none';
+
+                        // Clear the image name, hide the image icon, and hide the "Unselect Image" button when sent
+                        const imageNameElement = document.getElementById('image-name');
+                        const imageIconElement = document.getElementById('image-icon');
+                        const unselectImageButton = document.getElementById('unselect-image');
+                        imageNameElement.textContent = '';
+                        imageIconElement.style.display = 'none';
+                        unselectImageButton.style.display = 'none';
 
                         getMessages(toUser).then(() => {
                             scrollToBottom();
@@ -265,6 +316,7 @@
                         if (message.file_url) {
                             const card = document.createElement('div');
                             card.className = 'card mt-2';
+                            card.style = 'background-color: #404040;';
 
                             const cardBody = document.createElement('div');
                             cardBody.className = '';
@@ -286,30 +338,52 @@
                             listItem.appendChild(card);
                         }
 
-
+                        if (message.message_image_url) {
+                            const img = document.createElement('img');
+                            img.src = message.message_image_url;
+                            img.alt = "Message Image";
+                            img.style.width = '350px'; // Add this to limit the width of the image
+                            img.style.height = 'auto'; // Add this to limit the height of the image
+                            img.setAttribute('data-bs-toggle', 'modal');
+                            img.setAttribute('data-bs-target', '#exampleModal');
+                            img.setAttribute('onclick', `showImageInModal('${message.message_image_url}')`);
+                            listItem.appendChild(img);
+                        }
                         messageList.appendChild(listItem);
                     });
-
-
                     const newMessageCount = messageList.children.length;
                     return oldMessageCount !== newMessageCount;
-                });
+                }
+            );
         }
 
-        function scrollToBottom() {
-            const messageContainer = document.querySelector('.modal-body.overflow-auto');
-            messageContainer.scrollTop = messageContainer.scrollHeight;
-        }
+        document.querySelector('input[id="image"]').addEventListener('change', function () {
+            const imageNameElement = document.getElementById('image-name');
+            const imageIconElement = document.getElementById('image-icon');
+            const unselectImageButton = document.getElementById('unselect-image');
 
-        function pollNewMessages() {
-            setInterval(() => {
-                getMessages(activeDirect).then(newMessageAdded => {
-                    if (newMessageAdded) {
-                        scrollToBottom();
-                    }
-                });
-            }, 3000);
-        }
+            if (this.files.length > 0) {
+                imageNameElement.textContent = this.files[0].name;
+                imageIconElement.style.display = 'inline-block'; // Show the file icon
+                unselectImageButton.style.display = 'inline-block'; // Show the "Unselect" button
+            } else {
+                imageNameElement.textContent = '';
+                imageIconElement.style.display = 'none'; // Hide the file icon
+                unselectImageButton.style.display = 'none'; // Hide the "Unselect" button
+            }
+        });
+
+        document.getElementById('unselect-image').addEventListener('click', function () {
+            const imageInput = document.querySelector('input[id="image"]');
+            const imageNameElement = document.getElementById('image-name');
+            const imageIconElement = document.getElementById('image-icon');
+            const unselectImageButton = document.getElementById('unselect-image');
+
+            imageInput.value = '';
+            imageNameElement.textContent = '';
+            imageIconElement.style.display = 'none'; // Hide the image icon
+            unselectImageButton.style.display = 'none'; // Hide the "Unselect" button
+        });
 
         document.querySelector('input[type="file"]').addEventListener('change', function () {
             const fileNameElement = document.getElementById('file-name');
@@ -339,6 +413,34 @@
             unselectFileButton.style.display = 'none'; // Hide the "Unselect" button
         });
 
+        function showImageInModal(imageUrl) {
+            const modalBody = document.getElementById('modal-body');
+            modalBody.innerHTML = ''; // Clear existing content in the modal body
+
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            img.alt = "Message Image";
+            img.style.width = '100%'; 
+            img.style.height = 'auto'; 
+
+            modalBody.appendChild(img);
+        }
+
+        function scrollToBottom() {
+            const messageContainer = document.querySelector('.modal-body.overflow-auto');
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+        }
+
+        function pollNewMessages() {
+            setInterval(() => {
+                getMessages(activeDirect).then(newMessageAdded => {
+                    if (newMessageAdded) {
+                        scrollToBottom();
+                    }
+                });
+            }, 3000);
+        }
+
         document.querySelector('form').addEventListener('submit', event => {
             event.preventDefault();
             sendMessage();
@@ -349,7 +451,7 @@
         });
         pollNewMessages();
 
-        document.getElementById("searchBar").addEventListener("input", function() {
+        document.getElementById("searchBar").addEventListener("input", function () {
             filterUserList(this.value);
         });
 
