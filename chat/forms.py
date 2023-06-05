@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
+from .models import Offer
 
 # Create your forms here.
 class NewUserForm(UserCreationForm):
@@ -55,3 +56,16 @@ class NewUserForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
+class OfferForm(forms.ModelForm):
+    title = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control', 
+    }))
+    description = forms.Textarea()
+    price = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control', 
+    }))
+
+    class Meta:
+        model = Offer
+        fields = ("title", "description", "price")

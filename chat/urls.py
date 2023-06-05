@@ -13,6 +13,8 @@ urlpatterns = [
     path('send_message_ajax/', views.send_message_ajax, name='send_message_ajax'),
     path('get_messages_ajax/<str:username>/', views.get_messages_ajax, name='get_messages_ajax'),
     
+    path('create_offer/<str:username>/', views.create_offer, name='create_offer'),
+
     path('dashboard/', views.dashboard, name='dashboard'),
     path('profile/<str:username>', views.profile, name='profile'),
 ]

@@ -12,6 +12,8 @@ class Profile(models.Model):
         return self.user.username
     
 class Message(models.Model):
+    offer = models.ForeignKey('Offer', on_delete=models.SET_NULL, null=True, blank=True)
+
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user')
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='from_user')
     reciepient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='to_user')
@@ -65,3 +67,18 @@ class Message(models.Model):
                     'unread': Message.objects.filter(user=user, reciepient__pk=message['reciepient'], is_read=False).count()
                 })
         return users
+    
+class Offer(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_offer')
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='recipient_offer', null=True)  # new field
+    title = models.CharField(max_length=255)
+    description = models.TextField(null=True)  
+    price = models.IntegerField()
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name_plural = 'Offers'
+        ordering = ('-created',)
+
+    def __str__(self) -> str:
+        return self.title  

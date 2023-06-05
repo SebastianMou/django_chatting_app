@@ -7,8 +7,8 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 
-from .forms import NewUserForm
-from .models import Message, Profile
+from .forms import NewUserForm, OfferForm
+from .models import Message, Profile, Offer
 # Create your views here.
 def home(request):
     current_user = request.user
@@ -139,12 +139,15 @@ def directs(request, username):
     if request.user.username == username:
         return redirect('/')
 
+    offers = Offer.objects.filter(recipient=sending_message_to)
+
     context = {
         'sending_message_to': sending_message_to,
         'directs': directs,
         'active_direct': active_direct,
         'messages': messages,
         'is_active': is_active,
+        'offers': offers,
     }
     return render(request, 'users/directs.html', context)
 
@@ -185,3 +188,20 @@ def get_messages_ajax(request, username):
     # print(messages)  # Add this line to print messages data
     return JsonResponse({'messages': messages})
 
+def create_offer(request, username):
+    offer_to = get_object_or_404(User, username=username)
+    if request.method == 'POST':
+        form = OfferForm(request.POST)
+        if form.is_valid():
+            offer = form.save(commit=False)
+            offer.user = request.user
+            offer.recipient = offer_to
+            offer.save()
+            return redirect('/')
+    else:
+        form = OfferForm()
+    context = {
+        'form': form,
+        'offer_to': offer_to,
+    }
+    return render(request, 'autho/create_offer.html', context)

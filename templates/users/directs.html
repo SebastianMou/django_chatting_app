@@ -188,6 +188,7 @@
                     <div style="background-color: black; border-color: #00f;" class="send-box">
                         <form role="form" method="POST" enctype="multipart/form-data">
                             {% csrf_token %}
+
                             <input type="hidden" name="to_user" id="" value="{{ active_direct }}">
                             <input name="body" type="text" id="" value="" class="form-control bg-dark text-white"
                                 placeholder="typ message">
@@ -220,8 +221,34 @@
                         </div>
                     </div>
                 </div>
+                <br>
+                <div class="splide">
+                    <div class="splide__track">
+                      <ul class="splide__list">
+                        {% for offer in offers %}
+                            <li style="padding: 5px;" class="splide__slide">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <p style="color: black;">{{ offer.title }}</p>
+                                    </div>
+                                </div>
+                            </li>
+                        {% endfor %}
+                      </ul>
+                    </div>
+                </div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var splide = new Splide('.splide', {
+                            padding: '5rem',
+                        });
+
+                        splide.mount();
+                    });
+                </script>
             </div>
         </div>
+        <a class="btn btn-danger" href="{% url 'create_offer' sending_message_to.username %}">offer</a>
     </div>
     <!-- Button trigger modal -->
     <!-- Modal -->
@@ -483,5 +510,7 @@
             });
         }
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css" rel="stylesheet">
 </body>
 </html>
