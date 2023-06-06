@@ -14,6 +14,7 @@ urlpatterns = [
     path('get_messages_ajax/<str:username>/', views.get_messages_ajax, name='get_messages_ajax'),
     
     path('create_offer/<str:username>/', views.create_offer, name='create_offer'),
+    path('display_offer/<int:pk>/', views.display_offer, name='display_offer'),
 
     path('dashboard/', views.dashboard, name='dashboard'),
     path('profile/<str:username>', views.profile, name='profile'),

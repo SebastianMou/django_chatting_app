@@ -1,0 +1,11 @@
+{% extends '../base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="continer">
+    <h1>{{ offer.title }}</h1>
+    <p>{{ offer.description }}</p>
+    <h5>{{ offer.price }}</h5>
+</div>
+
+{% endblock %}

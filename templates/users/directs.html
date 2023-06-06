@@ -164,6 +164,15 @@
                                                     <img src="{{ direct.message_image.url }}" alt="Message Image" />
                                                 </p>
                                             {% endif %}
+                                            {% if direct.offer %}
+                                                <div class="card">
+                                                    <div class="card-body">
+                                                        <h5 class="card-title">{{ direct.offer.title }}</h5>
+                                                        <p class="card-text">${{ direct.offer.price }}</p>
+                                                        <a href="/offers/{{ direct.offer.id }}" class="btn btn-primary">View Offer</a>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
                                         </li>
                                     {% else %}
                                         <li class="sender">
@@ -188,7 +197,13 @@
                     <div style="background-color: black; border-color: #00f;" class="send-box">
                         <form role="form" method="POST" enctype="multipart/form-data">
                             {% csrf_token %}
-
+                            <select id="select_offer" name="offer">
+                                <option value="">Select offer</option>
+                                {% for offer in user_offers %}
+                                    <option value="{{ offer.id }}">{{ offer.title }}</option>
+                                {% endfor %}
+                            </select>                            
+                            
                             <input type="hidden" name="to_user" id="" value="{{ active_direct }}">
                             <input name="body" type="text" id="" value="" class="form-control bg-dark text-white"
                                 placeholder="typ message">
@@ -229,7 +244,9 @@
                             <li style="padding: 5px;" class="splide__slide">
                                 <div class="card">
                                     <div class="card-body">
-                                        <p style="color: black;">{{ offer.title }}</p>
+                                        <a href="{% url 'display_offer' offer.pk %}">
+                                            <p style="color: black;">{{ offer.title }}</p>
+                                        </a>
                                     </div>
                                 </div>
                             </li>
@@ -242,7 +259,6 @@
                         var splide = new Splide('.splide', {
                             padding: '5rem',
                         });
-
                         splide.mount();
                     });
                 </script>
@@ -251,7 +267,6 @@
         <a class="btn btn-danger" href="{% url 'create_offer' sending_message_to.username %}">offer</a>
     </div>
     <!-- Button trigger modal -->
-    <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div style="background-color: black;" class="modal-content">
@@ -265,7 +280,6 @@
             </div>
         </div>
     </div>
-  
     <script>
         const currentUser = "{{ request.user.username }}";
         const activeDirect = "{{ active_direct }}";
@@ -275,10 +289,15 @@
             const body = document.querySelector('input[name="body"]').value;
             const fileInput = document.querySelector('input[type="file"]');
             const imageInput = document.querySelector('input[id="image"]');
+            const offerSelect = document.querySelector('#select_offer'); // fetch the select element
             const formData = new FormData();
 
             formData.append('to_user', toUser);
             formData.append('body', body);
+
+            if (offerSelect.value) {
+                formData.append('offer', offerSelect.value);
+            }
 
             if (fileInput.files.length > 0) {
                 formData.append('file', fileInput.files[0]);
@@ -327,7 +346,8 @@
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                });
+                }
+            );
         }
 
         function getMessages(username) {
@@ -391,6 +411,38 @@
                             img.setAttribute('onclick', `showImageInModal('${message.message_image_url}')`);
                             listItem.appendChild(img);
                         }
+
+                        if (message.offer) {
+                            const offerCard = document.createElement('div');
+                            offerCard.className = 'card';
+                            offerCard.style = 'background-color: red;';
+
+                            const offerCardBody = document.createElement('div');
+                            offerCardBody.className = 'card-body';
+
+                            const offerTitle = document.createElement('h5');
+                            offerTitle.className = 'card-title';
+                            offerTitle.textContent = message.offer.title;
+
+                            const offerPrice = document.createElement('p');
+                            offerPrice.className = 'card-text';
+                            offerPrice.textContent = `$${message.offer.price}`;
+
+                            const offerLink = document.createElement('a');
+                            offerLink.className = 'btn btn-primary';
+                            offerLink.href = `/display_offer/${message.offer.pk}`; // Replace with the correct link to the offer detail page
+                            offerLink.textContent = 'View Offer';
+
+                            offerCardBody.appendChild(offerTitle);
+                            offerCardBody.appendChild(offerPrice);
+                            offerCardBody.appendChild(offerLink);
+                            offerCard.appendChild(offerCardBody);
+                            console.log("test----" + JSON.stringify(message.offer));
+
+
+                            listItem.appendChild(offerCard);
+                        }
+
                         messageList.appendChild(listItem);
                     });
                     const newMessageCount = messageList.children.length;

@@ -140,6 +140,7 @@ def directs(request, username):
         return redirect('/')
 
     offers = Offer.objects.filter(recipient=sending_message_to)
+    user_offers = Offer.objects.filter(user=request.user)
 
     context = {
         'sending_message_to': sending_message_to,
@@ -148,6 +149,7 @@ def directs(request, username):
         'messages': messages,
         'is_active': is_active,
         'offers': offers,
+        'user_offers': user_offers,
     }
     return render(request, 'users/directs.html', context)
 
@@ -158,9 +160,14 @@ def send_message_ajax(request):
         body = request.POST.get('body')
         file = request.FILES.get('file')
         message_image = request.FILES.get('message_image')  
+        offer_id = request.POST.get('offer')
+
+        offer = None
+        if offer_id:
+            offer = Offer.objects.get(id=offer_id)
 
         to_user = User.objects.get(username=to_user_username)
-        Message.send_message(from_user, to_user, body, file, message_image)
+        Message.send_message(from_user, to_user, body, offer, file, message_image)
 
         return JsonResponse({'status': 'success'})
     else:
@@ -181,9 +188,16 @@ def get_messages_ajax(request, username):
         }
         if direct.file:
             message_data['file_url'] = direct.file.url
-        if direct.message_image:  # Check if the message_image attribute exists
-            message_data['message_image_url'] = direct.message_image.url  # Add the image's URL to the message_data
+        if direct.message_image:
+            message_data['message_image_url'] = direct.message_image.url
+        if direct.offer:  # Check if the offer attribute exists
+            message_data['offer'] = {
+                'pk': direct.offer.pk,
+                'title': direct.offer.title,
+                'price': direct.offer.price,
+            }  # Add the offer's id, title, and price to the message_data
         messages.append(message_data)
+
 
     # print(messages)  # Add this line to print messages data
     return JsonResponse({'messages': messages})
@@ -205,3 +219,10 @@ def create_offer(request, username):
         'offer_to': offer_to,
     }
     return render(request, 'autho/create_offer.html', context)
+
+def display_offer(request, pk):
+    offer = get_object_or_404(Offer, pk=pk)
+    context = {
+        'offer': offer,
+    }
+    return render(request, 'autho/add_offer.html', context)

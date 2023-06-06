@@ -23,14 +23,18 @@ class Message(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
 
-    def send_message(from_user, to_user, body, file=None, message_image=None):
+    def send_message(from_user, to_user, body, offer=None, file=None, message_image=None):
         sender_message = Message(
             user=from_user,
             sender=from_user,
             reciepient=to_user,
             body=body,
             is_read=True,
+            offer=offer,
+            file=file,  # include this
+            message_image=message_image,  # and this
         )
+
 
         if file:
             sender_message.file = file
@@ -46,7 +50,11 @@ class Message(models.Model):
             reciepient=from_user,
             body=body,
             is_read=False,
+            offer=offer,  # include this
+            file=file,  # and this
+            message_image=message_image,  # and this
         )
+
 
         if file:
             recipient_message.file = sender_message.file  # Use the file saved in the sender_message
