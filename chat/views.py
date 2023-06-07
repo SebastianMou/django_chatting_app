@@ -195,6 +195,8 @@ def get_messages_ajax(request, username):
                 'pk': direct.offer.pk,
                 'title': direct.offer.title,
                 'price': direct.offer.price,
+                'description': direct.offer.description,
+                'created': direct.offer.created,
             }  # Add the offer's id, title, and price to the message_data
         messages.append(message_data)
 

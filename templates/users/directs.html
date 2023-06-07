@@ -167,9 +167,13 @@
                                             {% if direct.offer %}
                                                 <div class="card">
                                                     <div class="card-body">
-                                                        <h5 class="card-title">{{ direct.offer.title }}</h5>
-                                                        <p class="card-text">${{ direct.offer.price }}</p>
-                                                        <a href="/offers/{{ direct.offer.id }}" class="btn btn-primary">View Offer</a>
+                                                        <div class="d-flex justify-content-between align-items-center">
+                                                            <h5 class="card-title">{{ direct.offer.title }}</h5>
+                                                            <span class="card-text">${{ direct.offer.price }}</span>
+                                                        </div>
+                                                        <hr>
+                                                        <div class="card-text">{{ direct.offer.description }}</div>
+                                                        <a href="/offers/{{ direct.offer.id }}" class="btn btn-primary mt-3">View Offer</a>    
                                                     </div>
                                                 </div>
                                             {% endif %}
@@ -415,30 +419,44 @@
                         if (message.offer) {
                             const offerCard = document.createElement('div');
                             offerCard.className = 'card';
-                            offerCard.style = 'background-color: red;';
+                            offerCard.style = 'background-color: gray;'
 
                             const offerCardBody = document.createElement('div');
                             offerCardBody.className = 'card-body';
+
+                            const offerCardFlex = document.createElement('div')
+                            offerCardFlex.className = 'd-flex justify-content-between align-items-center';
 
                             const offerTitle = document.createElement('h5');
                             offerTitle.className = 'card-title';
                             offerTitle.textContent = message.offer.title;
 
-                            const offerPrice = document.createElement('p');
-                            offerPrice.className = 'card-text';
+                            const offerPrice = document.createElement('span');
+                            offerPrice.className = 'card-text;';
+                            offerPrice.style = 'font-weight: bold;'
                             offerPrice.textContent = `$${message.offer.price}`;
 
+                            const offerDescription = document.createElement('div');
+                            offerDescription.className = 'card-text';
+                            offerDescription.textContent = `${message.offer.description}`;
+
+                            const hrTag = document.createElement('hr');
+
+                            offerCardFlex.appendChild(offerTitle);  // append to offerCardFlex
+                            offerCardFlex.appendChild(offerPrice);  // append to offerCardFlex
+
                             const offerLink = document.createElement('a');
-                            offerLink.className = 'btn btn-primary';
-                            offerLink.href = `/display_offer/${message.offer.pk}`; // Replace with the correct link to the offer detail page
+                            offerLink.className = 'btn btn-primary form-control';  // added mt-3 for margin at the top
+                            offerLink.href = `/display_offer/${message.offer.pk}`;  // Replace with the correct link to the offer detail page
                             offerLink.textContent = 'View Offer';
 
-                            offerCardBody.appendChild(offerTitle);
-                            offerCardBody.appendChild(offerPrice);
+                            offerCardBody.appendChild(offerCardFlex);  // append offerCardFlex to offerCardBody
+                            
+                            offerCardBody.appendChild(hrTag);
+                            offerCardBody.appendChild(offerDescription);
+
                             offerCardBody.appendChild(offerLink);
                             offerCard.appendChild(offerCardBody);
-                            console.log("test----" + JSON.stringify(message.offer));
-
 
                             listItem.appendChild(offerCard);
                         }
