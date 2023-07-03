@@ -3,8 +3,9 @@ This is a chatting app made with django, bootstrap5, html, css, js and AJAX
 
 # Hidden Dialogs 🗨️
 
-![banner](./static/hidden.png)
-![Your GIF](./static/hiddengif.gif)
+![banner](./static/gitimages/hidden.png)
+![banner](./static/gitimages/hiddenS.png)
+![Your GIF](./static/gitimages/hiddengif.gif)
 
 Hidden Dialogs is an interactive chatting web application that allows users to communicate and share files with ease.
 
