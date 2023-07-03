@@ -10,9 +10,10 @@
         </div>
         <div class="col-md-8">
             <h4>username: @{{ user.username }}</h4>
-            <h4>first name: {{ user.first_name }}</h4>
-            <h4>last name: {{ user.last_name }}</h4>
-            <h4>bio: {{ user.bio }}</h4>
+            <h4>first name: {% if user.first_name %}{{ user.first_name }}{% else %}No first name provided{% endif %}</h4>
+            <h4>last name: {% if user.last_name %}{{ user.last_name }}{% else %}No last name provided{% endif %}</h4>
+            <h4>bio: {% if user.Bio %}{{ user.Bio }}{% else %}No bio provided{% endif %}</h4>
+
             <a class="btn btn-outline-danger" href="{% url 'directs' user %}">chat</a>
         </div>
     </div>

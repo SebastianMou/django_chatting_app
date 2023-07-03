@@ -7,8 +7,9 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 
-from .forms import NewUserForm, OfferForm
-from .models import Message, Profile, Offer
+from .forms import NewUserForm, UserUpdateForm, ProfileUpdateForm
+from .models import Message, Profile
+
 # Create your views here.
 def home(request):
     current_user = request.user
@@ -75,7 +76,26 @@ def user_register(request):
     return render(request, 'autho/user_register.html', context)
 
 def dashboard(request):
-    return render(request, 'users/dashboard.html')
+    if request.method == 'POST':
+        user_form = UserUpdateForm(request.POST, instance=request.user)
+        profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
+        
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            messages.success(request, 'Your account has been updated!')
+            return redirect('dashboard')
+    else:
+        user_form = UserUpdateForm(instance=request.user)
+        profile_form = ProfileUpdateForm(instance=request.user.profile)
+
+    context = {
+        'user_form': user_form,
+        'profile_form': profile_form
+    }
+
+    return render(request, 'users/dashboard.html', context)
+
 
 def profile(request, username):
     user = get_object_or_404(User, username=username)
@@ -139,17 +159,12 @@ def directs(request, username):
     if request.user.username == username:
         return redirect('/')
 
-    offers = Offer.objects.filter(recipient=sending_message_to)
-    user_offers = Offer.objects.filter(user=request.user)
-
     context = {
         'sending_message_to': sending_message_to,
         'directs': directs,
         'active_direct': active_direct,
         'messages': messages,
         'is_active': is_active,
-        'offers': offers,
-        'user_offers': user_offers,
     }
     return render(request, 'users/directs.html', context)
 
@@ -160,14 +175,9 @@ def send_message_ajax(request):
         body = request.POST.get('body')
         file = request.FILES.get('file')
         message_image = request.FILES.get('message_image')  
-        offer_id = request.POST.get('offer')
-
-        offer = None
-        if offer_id:
-            offer = Offer.objects.get(id=offer_id)
 
         to_user = User.objects.get(username=to_user_username)
-        Message.send_message(from_user, to_user, body, offer, file, message_image)
+        Message.send_message(from_user, to_user, body, file, message_image)
 
         return JsonResponse({'status': 'success'})
     else:
@@ -190,41 +200,7 @@ def get_messages_ajax(request, username):
             message_data['file_url'] = direct.file.url
         if direct.message_image:
             message_data['message_image_url'] = direct.message_image.url
-        if direct.offer:  # Check if the offer attribute exists
-            message_data['offer'] = {
-                'pk': direct.offer.pk,
-                'title': direct.offer.title,
-                'price': direct.offer.price,
-                'description': direct.offer.description,
-                'created': direct.offer.created,
-            }  # Add the offer's id, title, and price to the message_data
         messages.append(message_data)
-
 
     # print(messages)  # Add this line to print messages data
     return JsonResponse({'messages': messages})
-
-def create_offer(request, username):
-    offer_to = get_object_or_404(User, username=username)
-    if request.method == 'POST':
-        form = OfferForm(request.POST)
-        if form.is_valid():
-            offer = form.save(commit=False)
-            offer.user = request.user
-            offer.recipient = offer_to
-            offer.save()
-            return redirect('/')
-    else:
-        form = OfferForm()
-    context = {
-        'form': form,
-        'offer_to': offer_to,
-    }
-    return render(request, 'autho/create_offer.html', context)
-
-def display_offer(request, pk):
-    offer = get_object_or_404(Offer, pk=pk)
-    context = {
-        'offer': offer,
-    }
-    return render(request, 'autho/add_offer.html', context)

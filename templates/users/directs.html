@@ -164,19 +164,6 @@
                                                     <img src="{{ direct.message_image.url }}" alt="Message Image" />
                                                 </p>
                                             {% endif %}
-                                            {% if direct.offer %}
-                                                <div class="card">
-                                                    <div class="card-body">
-                                                        <div class="d-flex justify-content-between align-items-center">
-                                                            <h5 class="card-title">{{ direct.offer.title }}</h5>
-                                                            <span class="card-text">${{ direct.offer.price }}</span>
-                                                        </div>
-                                                        <hr>
-                                                        <div class="card-text">{{ direct.offer.description }}</div>
-                                                        <a href="/offers/{{ direct.offer.id }}" class="btn btn-primary mt-3">View Offer</a>    
-                                                    </div>
-                                                </div>
-                                            {% endif %}
                                         </li>
                                     {% else %}
                                         <li class="sender">
@@ -200,13 +187,7 @@
                     </div>
                     <div style="background-color: black; border-color: #00f;" class="send-box">
                         <form role="form" method="POST" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            <select id="select_offer" name="offer">
-                                <option value="">Select offer</option>
-                                {% for offer in user_offers %}
-                                    <option value="{{ offer.id }}">{{ offer.title }}</option>
-                                {% endfor %}
-                            </select>                            
+                            {% csrf_token %}                         
                             
                             <input type="hidden" name="to_user" id="" value="{{ active_direct }}">
                             <input name="body" type="text" id="" value="" class="form-control bg-dark text-white"
@@ -241,34 +222,8 @@
                     </div>
                 </div>
                 <br>
-                <div class="splide">
-                    <div class="splide__track">
-                      <ul class="splide__list">
-                        {% for offer in offers %}
-                            <li style="padding: 5px;" class="splide__slide">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <a href="{% url 'display_offer' offer.pk %}">
-                                            <p style="color: black;">{{ offer.title }}</p>
-                                        </a>
-                                    </div>
-                                </div>
-                            </li>
-                        {% endfor %}
-                      </ul>
-                    </div>
-                </div>
-                <script>
-                    document.addEventListener('DOMContentLoaded', function () {
-                        var splide = new Splide('.splide', {
-                            padding: '5rem',
-                        });
-                        splide.mount();
-                    });
-                </script>
             </div>
         </div>
-        <a class="btn btn-danger" href="{% url 'create_offer' sending_message_to.username %}">offer</a>
     </div>
     <!-- Button trigger modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -293,15 +248,10 @@
             const body = document.querySelector('input[name="body"]').value;
             const fileInput = document.querySelector('input[type="file"]');
             const imageInput = document.querySelector('input[id="image"]');
-            const offerSelect = document.querySelector('#select_offer'); // fetch the select element
             const formData = new FormData();
 
             formData.append('to_user', toUser);
             formData.append('body', body);
-
-            if (offerSelect.value) {
-                formData.append('offer', offerSelect.value);
-            }
 
             if (fileInput.files.length > 0) {
                 formData.append('file', fileInput.files[0]);
@@ -414,51 +364,6 @@
                             img.setAttribute('data-bs-target', '#exampleModal');
                             img.setAttribute('onclick', `showImageInModal('${message.message_image_url}')`);
                             listItem.appendChild(img);
-                        }
-
-                        if (message.offer) {
-                            const offerCard = document.createElement('div');
-                            offerCard.className = 'card';
-                            offerCard.style = 'background-color: gray;'
-
-                            const offerCardBody = document.createElement('div');
-                            offerCardBody.className = 'card-body';
-
-                            const offerCardFlex = document.createElement('div')
-                            offerCardFlex.className = 'd-flex justify-content-between align-items-center';
-
-                            const offerTitle = document.createElement('h5');
-                            offerTitle.className = 'card-title';
-                            offerTitle.textContent = message.offer.title;
-
-                            const offerPrice = document.createElement('span');
-                            offerPrice.className = 'card-text;';
-                            offerPrice.style = 'font-weight: bold;'
-                            offerPrice.textContent = `$${message.offer.price}`;
-
-                            const offerDescription = document.createElement('div');
-                            offerDescription.className = 'card-text';
-                            offerDescription.textContent = `${message.offer.description}`;
-
-                            const hrTag = document.createElement('hr');
-
-                            offerCardFlex.appendChild(offerTitle);  // append to offerCardFlex
-                            offerCardFlex.appendChild(offerPrice);  // append to offerCardFlex
-
-                            const offerLink = document.createElement('a');
-                            offerLink.className = 'btn btn-primary form-control';  // added mt-3 for margin at the top
-                            offerLink.href = `/display_offer/${message.offer.pk}`;  // Replace with the correct link to the offer detail page
-                            offerLink.textContent = 'View Offer';
-
-                            offerCardBody.appendChild(offerCardFlex);  // append offerCardFlex to offerCardBody
-                            
-                            offerCardBody.appendChild(hrTag);
-                            offerCardBody.appendChild(offerDescription);
-
-                            offerCardBody.appendChild(offerLink);
-                            offerCard.appendChild(offerCardBody);
-
-                            listItem.appendChild(offerCard);
                         }
 
                         messageList.appendChild(listItem);

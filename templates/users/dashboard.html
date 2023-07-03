@@ -10,11 +10,40 @@
         </div>
         <div class="col-md-8">
             <h4>username: @{{ user.username }}</h4>
-            <h4>first name: {{ user.first_name }}</h4>
-            <h4>last name: {{ user.last_name }}</h4>
-            <h4>bio: {{ user.bio }}</h4>
-            <a class="btn btn-outline-info" href="">update</a>
+            <h4>first name: {% if user.first_name %}{{ user.first_name }}{% else %}<span style="color: red;">No first name provided</span>{% endif %}</h4>
+            <h4>last name: {% if user.last_name %}{{ user.last_name }}{% else %}<span style="color: red;">No last name provided</span>{% endif %}</h4>
+            <h4>bio: {% if user.bio %}{{ user.bio }}{% else %} <span style="color: red;">No bio provided</span>{% endif %}</h4>
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                update
+            </button>
+            
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                <div style="background-color: black;" class="modal-content">
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="content-section">
+                            <form method="POST" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                {{ user_form }}
+                                {{ profile_form }}
+                                <button class="btn btn-primary" type="submit">Save changes</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+                </div>
+            </div>
         </div>
     </div>
+
 </div>
 {% endblock %}

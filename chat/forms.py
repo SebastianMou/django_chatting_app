@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
-from .models import Offer
+from .models import Profile
 
 # Create your forms here.
 class NewUserForm(UserCreationForm):
@@ -57,15 +57,22 @@ class NewUserForm(UserCreationForm):
             user.save()
         return user
 
-class OfferForm(forms.ModelForm):
-    title = forms.CharField(widget=forms.TextInput(attrs={
-        'class': 'form-control', 
-    }))
-    description = forms.Textarea()
-    price = forms.CharField(widget=forms.TextInput(attrs={
-        'class': 'form-control', 
-    }))
-
+class UserUpdateForm(forms.ModelForm):
     class Meta:
-        model = Offer
-        fields = ("title", "description", "price")
+        model = User
+        fields = ['username', 'first_name', 'last_name', 'email']
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}),
+        }
+
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['bio', 'profile_image']
+        widgets = {
+            'bio': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Bio'}),
+            'profile_image': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
+        }
