@@ -3,9 +3,17 @@ This is a chatting app made with django, bootstrap5, html, css, js and AJAX
 
 # Hidden Dialogs 🗨️
 
-![banner](./static/gitimages/hidden.png)
-![banner](./static/gitimages/hiddenS.png)
-![Your GIF](./static/gitimages/hiddengif.gif)
+<p align="center">
+  <img src="./static/gitimages/hidden.png" alt="Logo">
+</p>
+
+<p align="center">
+  <img src="./static/gitimages/hiddenS.png" alt="hiddenS">
+</p>
+
+<p align="center">
+  <img src="./static/gitimages/hiddengif.gif" alt="hiddengif">
+</p>
 
 Hidden Dialogs is an interactive chatting web application that allows users to communicate and share files with ease.
 
@@ -13,6 +21,8 @@ Hidden Dialogs is an interactive chatting web application that allows users to c
 - [Features](#features-🚀)
 - [Technologies](#technologies-💻)
 - [Installation](#installation-🛠️)
+- [For Linux](#for-linux-🐧)
+- [For Windows](#for-windows-🪟)
 - [Usage](#usage-🖥️)
 - [Contributing](#contributing-🤝)
 - [License](#license-📜)
@@ -28,6 +38,7 @@ Hidden Dialogs is an interactive chatting web application that allows users to c
 Hidden Dialogs is built with the following technologies:
 - [Django](https://www.djangoproject.com/)
 - [Bootstrap 5](https://getbootstrap.com/docs/5.0/getting-started/introduction/)
+- [Python3](https://www.python.org/downloads/)
 - HTML5
 - CSS3
 - JavaScript
@@ -36,7 +47,7 @@ Hidden Dialogs is built with the following technologies:
 ## Installation 🛠️
 
 plaintext
-# For Linux:
+# For Linux: 🐧
 
 1. Clone this repository
    `git clone https://github.com/SebastianMou/django_chatting_app`
@@ -60,7 +71,7 @@ plaintext
    `python3 manage.py runserver`
 
 
-# For Windows:
+# For Windows: 🪟
 
 1. Clone this repository
    `git clone https://github.com/SebastianMou/django_chatting_app`
@@ -83,8 +94,6 @@ plaintext
 7. Start the Django server
    `python manage.py runserver`
 
-
-
 ## Usage 🖥️
 1. Visit `http://127.0.0.1:8000` in your browser.
 2. Register for an account or login if you already have one.
@@ -92,6 +101,29 @@ plaintext
 4. Upload files and images by clicking on the attachment icon in the chatbox.
 
 ## Contributing 🤝
-1. Fork this repository
-2. Clone your forked repository
+1. Contributions, issues, and feature requests are welcome...
+2. Fork this repository
+3. Clone your forked repository
 
+## License 📜
+[MIT](https://choosealicense.com/licenses/mit/) License
+
+Copyright (c) [2022] [Sebastián Mauricio Groger Gutiérrez]
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
