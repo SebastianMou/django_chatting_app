@@ -19,6 +19,21 @@ def home(request):
     }
     return render(request, 'home.html', context)
 
+def search_box(request):
+    if request.method == 'POST':
+        searched = request.POST.get('searched')
+        # Filter based on username, first name, and last name
+        usernames = User.objects.filter(
+            username__icontains=searched
+        ) | User.objects.filter(
+            first_name__icontains=searched
+        ) | User.objects.filter(
+            last_name__icontains=searched
+        )
+        return render(request, 'search/search_box.html', {'searched': searched, 'usernames': usernames})
+    else:
+        return render(request, 'search/search_box.html')
+    
 def user_login(request):
     if request.method == 'POST':
         username = request.POST["username"]

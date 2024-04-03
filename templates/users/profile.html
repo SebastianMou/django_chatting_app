@@ -2,6 +2,11 @@
 {% load static %}
 
 {% block content %}
+<style>
+    th, td {
+        color: white;
+    }
+</style>
 <br>
 <div class="container">
     <div class="row">
@@ -9,13 +14,33 @@
             <img style="width: 300px; height: auto;" src="{{ user.profile.profile_image.url }}" alt="" srcset="">
         </div>
         <div class="col-md-8">
-            <h4>username: @{{ user.username }}</h4>
-            <h4>first name: {% if user.first_name %}{{ user.first_name }}{% else %}No first name provided{% endif %}</h4>
-            <h4>last name: {% if user.last_name %}{{ user.last_name }}{% else %}No last name provided{% endif %}</h4>
-            <h4>bio: {% if user.Bio %}{{ user.Bio }}{% else %}No bio provided{% endif %}</h4>
-
-            <a class="btn btn-outline-danger" href="{% url 'directs' user %}">chat</a>
+            <table class="table table-striped">
+                <tbody>
+                    <tr>
+                        <th>Field</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Username</td>
+                        <td>@{{ user.username }}</td>
+                    </tr>
+                    <tr>
+                        <td>First Name</td>
+                        <td>{% if user.first_name %}{{ user.first_name }}{% else %}No first name provided{% endif %}</td>
+                    </tr>
+                    <tr>
+                        <td>Last Name</td>
+                        <td>{% if user.last_name %}{{ user.last_name }}{% else %}No last name provided{% endif %}</td>
+                    </tr>
+                    <tr>
+                        <td>Bio</td>
+                        <td>{% if user.Bio %}{{ user.Bio }}{% else %}No bio provided{% endif %}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <a class="btn btn-outline-danger form-control" href="{% url 'directs' user %}">Chat</a>
         </div>
+        
     </div>
 </div>
 {% endblock %}

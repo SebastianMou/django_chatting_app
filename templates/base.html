@@ -28,6 +28,17 @@
         .navbar-brand.big-text {
             font-size: 24px !important;
         }
+        .form-control, .btn-outline-info {
+            border: 1px solid blue !important; /* Change the border color to blue and make sure it overrides other styles */
+            box-shadow: 0 0 10px blue; /* Adds a blue glow effect */
+            background-color: black;
+        }
+
+        .form-control:focus, .btn-outline-info:focus {
+            background-color: black !important; /* Keeps the background color black on focus */
+            border-color: blue !important; /* Keeps the border color blue on focus */
+            box-shadow: 0 0 10px blue !important; /* Maintains the blue glow effect on focus */
+        }
     </style>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
@@ -60,10 +71,11 @@
                     </li>
                 {% endif %}
             </ul>
-            <form class="d-flex">
-              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-              <button class="btn btn-outline-success" type="submit">Search</button>
-            </form>
+            <form action="{% url 'search_box' %}" method="POST" class="d-flex">
+                {% csrf_token %}
+                <input style="color: white;" class="form-control me-2" type="search" name="searched" placeholder="search" aria-label="Search">
+                <button class="btn btn-outline-info" type="submit">Search</button>
+              </form>
           </div>
         </div>
       </nav>

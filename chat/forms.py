@@ -76,3 +76,6 @@ class ProfileUpdateForm(forms.ModelForm):
             'bio': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Bio'}),
             'profile_image': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
         }
+
+class SearchForm(forms.Form):
+    query = forms.CharField()
